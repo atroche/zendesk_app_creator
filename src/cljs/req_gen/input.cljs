@@ -11,10 +11,6 @@
 (declare checkbox select text-box)
 
 (defn schema-to-input-component [schema]
-  (p "have some schema")
-  (p schema)
-  (pclj schema)
-  (p (type schema))
   (if (= s/Bool schema)
     checkbox
     (if (= s/EnumSchema (type schema))

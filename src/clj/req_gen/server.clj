@@ -1,6 +1,6 @@
 (ns req-gen.server
     (:require [clojure.java.io :as io]
-              [req-gen.dev :refer [is-dev? inject-devmode-html browser-repl]]
+              [req-gen.dev :refer [is-dev? inject-devmode-html start-brepl]]
               [compojure.core :refer [GET defroutes]]
               [compojure.route :refer [resources]]
               [compojure.handler :refer [api]]
@@ -10,7 +10,7 @@
               [ring.adapter.jetty :refer [run-jetty]]))
 
 (deftemplate page
-  (io/resource "index.html") [] [:body] (if is-dev? inject-devmode-html identity))
+  (io/resource "index.html") [] [:body] (if is-dev? (inject-devmode-html) identity))
 
 (defroutes routes
   (resources "/")
@@ -26,6 +26,7 @@
   (defonce ^:private server
     (run-jetty http-handler {:port (Integer. (or port (env :port) 10555))
                                  :join? false}))
+  (def my-repl (start-brepl))
   server)
 
 (defn -main [& [port]]

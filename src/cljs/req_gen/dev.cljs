@@ -1,7 +1,7 @@
 (ns req-gen.dev
     (:require [figwheel.client :as figwheel :include-macros true]
-              [cljs.core.async :refer [chan put!]]
-              [weasel.repl :as weasel]))
+              [clojure.browser.repl :as repl]
+              [cljs.core.async :refer [chan put!]]))
 
 (def is-dev? (.contains (.. js/document -body -classList) "is-dev"))
 
@@ -13,5 +13,4 @@
    :websocket-url "ws://localhost:3449/figwheel-ws"
    :jsload-callback (fn []
                       (put! re-render-ch true)
-                      (print "reloaded")))
-  (weasel/connect "ws://localhost:9001" :verbose true))
+                      (print "reloaded"))))

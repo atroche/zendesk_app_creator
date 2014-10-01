@@ -22,6 +22,7 @@
                  [prismatic/om-tools "0.3.3"]]
 
   :plugins [[lein-cljsbuild "1.0.3"]
+            [com.cemerick/austin "0.1.5"]
             [lein-environ "1.0.0"]]
 
   :min-lein-version "2.0.0"

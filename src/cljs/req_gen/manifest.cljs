@@ -8,10 +8,14 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]))
 
+(def DefaultLocale (s/enum "en" "de" "jp"))
+(def FrameworkVersion (s/enum "0.5" "1.0"))
+(def Location (s/enum "nav_bar" "top_bar"))
+
 (def Manifest
-  {:default-locale (s/enum "en" "de" "jp")
-   :framework-version (s/enum "0.5" "1.0")
-   :location (s/enum "nav_bar" "top_bar")
+  {:default-locale DefaultLocale
+   :framework-version FrameworkVersion
+   :location Location
    :author {:name s/Str
             :email s/Str}
    :private s/Bool
