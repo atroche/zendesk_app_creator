@@ -10,3 +10,12 @@ pom.xml.asc
 /resources/public/
 /out
 /.repl
+resources/public/req_gen.js*
+resources/public/req_gen_prod.js*
+resources/public/req_gen*
+/.nrepl-port
+out/
+.repl/
+resources/public/out
+*-out
+
