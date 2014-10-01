@@ -3,7 +3,7 @@
   (:require [req-gen.dev :refer [is-dev?]]
             [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.helpers :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest]]
+            [req-gen.schemas :refer [Manifest Author]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [om-tools.dom :as dom :include-macros true]
@@ -13,11 +13,11 @@
 
 
 (defn schema-to-input-component [schema]
-  (if (= s/Bool schema)
-    checkbox
-    (if (= s/EnumSchema (type schema))
-      select
-      text-box)))
+  (cond
+    (= s/Bool schema) checkbox
+    (= s/EnumSchema (type schema)) select
+    (= Author schema) author-info
+    :else text-box))
 
 (defcomponent text-box [app owner {param :param}]
   (render-state [_ {form-chan :form-chan}]
@@ -48,3 +48,6 @@
       (for [option (rest (s/explain (param Manifest)))]
         (dom/option {:value option} option)))))
 
+(defcomponent author-info [app owner {param :param}]
+  (render-state [_ {form-chan :form-chan}]
+    (dom/div "I am an author!")))
