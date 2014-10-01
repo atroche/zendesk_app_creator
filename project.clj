@@ -9,6 +9,7 @@
   :dependencies [[org.clojure/clojure "1.6.0"]
                  [org.clojure/clojurescript "0.0-2342"]
                  [ring "1.3.1"]
+                 [prismatic/schema "0.3.0"]
                  [compojure "1.1.9"]
                  [enlive "1.1.5"]
                  [om "0.7.1"]
