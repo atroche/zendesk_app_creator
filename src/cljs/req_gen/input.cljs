@@ -1,7 +1,6 @@
 (ns req-gen.input
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [req-gen.dev :refer [is-dev?]]
-            [cljs.core.async :refer [<! >! put! chan]]
+  (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.helpers :refer [p pclj]]
             [req-gen.schemas :refer [Manifest Author]]
             [om.core :as om :include-macros true]
@@ -23,7 +22,7 @@
   (render-state [_ {form-chan :form-chan}]
     (dom/input {:type "text"
                 :name param
-                :value (param app)
+                :value (get app param)
                 :on-change (fn [event]
                             (put! form-chan [:change param (.-value (.-target event))]))})))
 
@@ -48,6 +47,20 @@
       (for [option (rest (s/explain (param Manifest)))]
         (dom/option {:value option} option)))))
 
+
 (defcomponent author-info [app owner {param :param}]
   (render-state [_ {form-chan :form-chan}]
-    (dom/div "I am an author!")))
+    (pclj (param app))
+    (dom/div
+    (for [[inner-param inner-schema] (param app)]
+    (do
+      (dom/div
+        (dom/label {:for param
+                    :class "manifest-label"
+                    :style {:display "block"
+                            :margin-bottom "4px"
+                            :margin-top "14px"}}
+                   (str (name inner-param) ":"))
+        (let [component (schema-to-input-component inner-schema)]
+          (om/build component app {:state {:form-chan form-chan}
+                                   :opts {:param [param inner-param]}}))))))))

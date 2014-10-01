@@ -1,7 +1,6 @@
 (ns req-gen.manifest
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [req-gen.dev :refer [is-dev?]]
-            [req-gen.input :refer [schema-to-input-component]]
+  (:require [req-gen.input :refer [schema-to-input-component]]
             [req-gen.schemas :refer [Manifest DefaultLocale FrameworkVersion Location]]
             [cljs.core.async :refer [<! >! put! chan]]
             [om.core :as om :include-macros true]
