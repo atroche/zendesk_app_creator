@@ -2,24 +2,14 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [req-gen.dev :refer [is-dev?]]
             [req-gen.input :refer [schema-to-input-component]]
+            [req-gen.schemas :refer [Manifest DefaultLocale FrameworkVersion Location]]
             [cljs.core.async :refer [<! >! put! chan]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]))
 
-(def DefaultLocale (s/enum "en" "de" "jp"))
-(def FrameworkVersion (s/enum "0.5" "1.0"))
-(def Location (s/enum "nav_bar" "top_bar"))
 
-(def Manifest
-  {:default-locale DefaultLocale
-   :framework-version FrameworkVersion
-   :location Location
-   :author {:name s/Str
-            :email s/Str}
-   :private s/Bool
-   :no-template s/Bool})
 
 (defn pretty-json [data]
   (.stringify js/JSON (clj->js data) nil 2))
