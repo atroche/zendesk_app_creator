@@ -36,15 +36,15 @@
                             (put! form-events-chan [:change param (.-target event)]))})))
 
 (defcomponent manifest-form [app owner]
+  (init-state [_]
+    {:form-events-chan (chan)})
   (will-mount [_]
-    (let [form-events-chan (chan)]
-      (om/set-state! owner :form-events-chan form-events-chan)
+    (let [form-events-chan (om/get-state owner :form-events-chan)]
       (go (while true
         (let  [[event-type param target :as blah] (<! form-events-chan)]
           (om/transact! app param #(.-value target)))))))
-  (render [_]
-    (let [form-events-chan (om/get-state owner :form-events-chan)
-          param :default-locale]
+  (render-state [_ {form-events-chan :form-events-chan :as state}]
+    (let [param :default-locale]
       (dom/form
         (om/build manifest-input app {:state {:form-events-chan form-events-chan}
                                       :opts {:param :default-locale}})))))
