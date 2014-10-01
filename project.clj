@@ -36,7 +36,14 @@
                                         :preamble      ["react/react.min.js"]
                                         :externs       ["react/externs/react.js"]
                                         :optimizations :none
-                                        :pretty-print  true}}}}
+                                        :pretty-print  true}}
+                      :prod {:source-paths ["src/cljs"]
+                             :compiler {:output-to     "resources/public/prod.js"
+                                        :output-dir    "resources/public/out-prod"
+                                        :preamble      ["react/react.min.js"]
+                                        :externs       ["react/externs/react.js"]
+                                        :optimizations :advanced
+                                        :pretty-print  false}}}}
 
   :profiles {:dev {:repl-options {:init-ns req-gen.server
                                   :nrepl-middleware [cemerick.piggieback/wrap-cljs-repl]}

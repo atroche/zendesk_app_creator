@@ -2,6 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [req-gen.input :refer [schema-to-input-component]]
             [req-gen.schemas :refer [Manifest DefaultLocale FrameworkVersion Location]]
+            [req-gen.utils :refer [keys-to-camel-case]]
             [cljs.core.async :refer [<! >! put! chan]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
@@ -13,9 +14,10 @@
 (defn pretty-json [data]
   (.stringify js/JSON (clj->js data) nil 2))
 
+
 (defcomponent manifest [app owner]
   (render [_]
-    (dom/pre (pretty-json app))))
+    (dom/pre (pretty-json (keys-to-camel-case app)))))
 
 (defcomponent manifest-form [app owner]
   (init-state [_]

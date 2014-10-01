@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [close! <! >! put! chan]]
             [req-gen.manifest :refer [manifest manifest-form]]
-            [req-gen.helpers :refer [p]]
+            [req-gen.utils :refer [p]]
             [om.core :as om :include-macros true]
             [figwheel.client :as figwheel :include-macros true]
             [clojure.browser.repl :as repl]
@@ -25,8 +25,8 @@
   (atom {:app {:default-locale "en"
                :framework-version "1.0"
                :location "nav_bar"
-               :author {:name "Alistair Roche"
-                        :email "roche.a@gmail.com"}
+               :author {:name ""
+                        :email ""}
                :private true
                :no-template true}
          :requirements {:targets {:a_basecamp_target {:title "A sample target"

@@ -1,7 +1,7 @@
 (ns req-gen.input
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
-            [req-gen.helpers :refer [p pclj]]
+            [req-gen.utils :refer [p pclj]]
             [req-gen.schemas :refer [Manifest Author]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
