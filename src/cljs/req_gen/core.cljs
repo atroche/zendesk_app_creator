@@ -29,24 +29,24 @@
       (dom/pre app-json))))
 
 (defcomponent manifest-input [app owner {param :param}]
-  (render-state [_ {form-events-chan :form-events-chan}]
+  (render-state [_ {form-chan :form-chan}]
     (dom/input {:type "text"
                 :value (param app)
                 :onChange (fn [event]
-                            (put! form-events-chan [:change param (.-target event)]))})))
+                            (put! form-chan [:change param (.-target event)]))})))
 
 (defcomponent manifest-form [app owner]
   (init-state [_]
-    {:form-events-chan (chan)})
+    {:form-chan (chan)})
   (will-mount [_]
-    (let [form-events-chan (om/get-state owner :form-events-chan)]
+    (let [form-chan (om/get-state owner :form-chan)]
       (go (while true
-        (let  [[event-type param target :as blah] (<! form-events-chan)]
+        (let  [[event-type param target :as blah] (<! form-chan)]
           (om/transact! app param #(.-value target)))))))
-  (render-state [_ {form-events-chan :form-events-chan :as state}]
+  (render-state [_ {form-chan :form-chan :as state}]
     (let [param :default-locale]
       (dom/form
-        (om/build manifest-input app {:state {:form-events-chan form-events-chan}
+        (om/build manifest-input app {:state {:form-chan form-chan}
                                       :opts {:param :default-locale}})))))
 
 (om/root
