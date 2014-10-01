@@ -28,22 +28,26 @@
     (let [app-json (.stringify js/JSON (clj->js app) nil 2)]
       (dom/pre app-json))))
 
+(defcomponent manifest-input [app owner {param :param}]
+  (render-state [_ {form-events-chan :form-events-chan}]
+    (dom/input {:type "text"
+                :value (param app)
+                :onChange (fn [event]
+                            (put! form-events-chan [:change param (.-target event)]))})))
+
 (defcomponent manifest-form [app owner]
   (will-mount [_]
     (let [form-events-chan (chan)]
       (om/set-state! owner :form-events-chan form-events-chan)
       (go (while true
         (let  [[event-type param target :as blah] (<! form-events-chan)]
-          (.log js/console (.-value target))
           (om/transact! app param #(.-value target)))))))
   (render [_]
     (let [form-events-chan (om/get-state owner :form-events-chan)
           param :default-locale]
       (dom/form
-        (dom/input {:type "text"
-                    :value (param app)
-                    :onChange (fn [event]
-                                (put! form-events-chan [:change param (.-target event)]))})))))
+        (om/build manifest-input app {:state {:form-events-chan form-events-chan}
+                                      :opts {:param :default-locale}})))))
 
 (om/root
   (fn [app owner]
