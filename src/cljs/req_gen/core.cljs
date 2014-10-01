@@ -41,13 +41,14 @@
   (will-mount [_]
     (let [form-chan (om/get-state owner :form-chan)]
       (go (while true
-        (let  [[event-type param target :as blah] (<! form-chan)]
+        (let  [[event-type param target] (<! form-chan)]
           (om/transact! app param #(.-value target)))))))
   (render-state [_ {form-chan :form-chan :as state}]
     (let [param :default-locale]
       (dom/form
-        (om/build manifest-input app {:state {:form-chan form-chan}
-                                      :opts {:param :default-locale}})))))
+        (for [param (keys app)]
+          (om/build manifest-input app {:state {:form-chan form-chan}
+                                        :opts {:param param}}))))))
 
 (om/root
   (fn [app owner]
