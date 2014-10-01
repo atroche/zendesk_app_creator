@@ -1,6 +1,6 @@
 (ns req-gen.core
   (:require-macros [cljs.core.async.macros :refer [go]])
-  (:require [req-gen.dev :refer [is-dev?]]
+  (:require [req-gen.dev :refer [is-dev? re-render-ch]]
             [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.manifest :refer [manifest manifest-form]]
             [req-gen.helpers :refer [p]]
@@ -26,14 +26,20 @@
                                                       :resource "todo"}}}}))
 
 
+(defcomponent root [app owner]
+  (will-mount [_]
+    (go (loop []
+      (when (<! re-render-ch)
+        (om/refresh! owner)
+        (recur)))))
+  (render [_]
+    (dom/h1 "App Builder")
+    (dom/div
+      (om/build manifest-form (:app app))
+      (om/build manifest (:app app)))))
+
 (om/root
-  (fn [app owner]
-    (reify om/IRender
-      (render [_]
-        (dom/h1 "App Builder")
-        (dom/div
-          (om/build manifest-form (:app app))
-          (om/build manifest (:app app))))))
+  root
   app-state
   {:target (. js/document (getElementById "app"))})
 
