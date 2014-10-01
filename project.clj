@@ -1,6 +1,6 @@
 (defproject req-gen "0.1.0-SNAPSHOT"
-  :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :description "Zendesk App Creator"
+  :url "https://github.com/atroche/zendesk_app_creator"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
 
