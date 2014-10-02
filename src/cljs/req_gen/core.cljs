@@ -13,7 +13,7 @@
             [om-tools.core :refer-macros [defcomponent]]))
 
 (defonce app-state
-  (atom {:manifest {:default-locale "en"
+  (atom {:manifest {:default-locale "de"
                     :framework-version "1.0"
                     :location "nav_bar"
                     :author {:name "Alistair Roche"

@@ -77,7 +77,7 @@
           (let [field-schema (field-name schema)
                 component (schema-to-input-component field-schema)]
             (om/build component
-                      (if (#{text-box checkbox} component) fields field-value)
+                      (if (#{text-box checkbox select} component) fields field-value)
                       {:state {:form-chan fields-chan}
                        :opts {:param field-name
                               :schema field-schema}})))))))
