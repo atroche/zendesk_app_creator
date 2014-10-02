@@ -19,16 +19,3 @@
   (render [_]
     (dom/pre (pretty-json (keys-to-camel-case app)))))
 
-(defcomponent manifest-form [app owner]
-  (init-state [_]
-    {:form-chan (chan)})
-  (will-mount [_]
-    (let [form-chan (om/get-state owner :form-chan)]
-      (go (while true
-        (let [[event-type param new-value] (<! form-chan)]
-          (om/update! app param new-value))))))
-  (render-state [_ {form-chan :form-chan :as state}]
-    (dom/form
-      (om/build nested app {:opts {:schema App}}))))
-
-

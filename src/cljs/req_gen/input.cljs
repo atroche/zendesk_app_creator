@@ -74,6 +74,8 @@
           (pclj field)
           (dom/div
             (label field-name)
+            (p field-name)
+            (pclj schema)
             (let [field-schema (field-name schema)
                   component (schema-to-input-component field-schema)]
               (pclj field-schema)

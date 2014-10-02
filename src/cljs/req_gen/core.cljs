@@ -1,7 +1,9 @@
 (ns req-gen.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [close! <! >! put! chan]]
-            [req-gen.manifest :refer [manifest manifest-form]]
+            [req-gen.manifest :refer [manifest]]
+            [req-gen.schemas :refer [App]]
+            [req-gen.input :refer [nested]]
             [req-gen.utils :refer [p]]
             [om.core :as om :include-macros true]
             [figwheel.client :as figwheel :include-macros true]
@@ -47,7 +49,7 @@
     (close! (om/get-state owner :rerender-loop)))
   (render [_]
     (dom/div
-      (om/build manifest-form app)
+      (om/build nested app {:opts {:schema App}})
       (om/build manifest (:manifest app)))))
 
 (om/root
