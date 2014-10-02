@@ -12,17 +12,6 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]))
 
-(defonce re-render-ch (chan))
-
-
-(enable-console-print!)
-
-(figwheel/watch-and-reload
- :websocket-url "ws://localhost:3449/figwheel-ws"
- :jsload-callback (fn []
-                    (put! re-render-ch true)
-                    (print "reloaded")))
-
 (defonce app-state
   (atom {:manifest {:default-locale "en"
                     :framework-version "1.0"
@@ -35,6 +24,14 @@
                                                        :type "email"
                                                        :subject "Hey"
                                                        :email "a@b.com"}}}}))
+
+(defonce re-render-ch (chan))
+(enable-console-print!)
+(figwheel/watch-and-reload
+ :websocket-url "ws://localhost:3449/figwheel-ws"
+ :jsload-callback (fn []
+                    (put! re-render-ch true)
+                    (print "reloaded")))
 
 
 (defcomponent root [app owner]

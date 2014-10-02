@@ -70,20 +70,16 @@
   (render-state [_ {fields-chan :fields-chan}]
     (dom/div
       (for [[field-name field-value :as field] fields]
-        (do
-          (pclj field)
-          (dom/div
-            (label field-name)
-            (p field-name)
-            (pclj schema)
-            (let [field-schema (field-name schema)
-                  component (schema-to-input-component field-schema)]
-              (pclj field-schema)
-              (om/build component
-                        field-value
-                        {:state {:form-chan fields-chan}
-                         :opts {:param field-name
-                                :schema field-schema}}))))))))
+        (dom/div
+          (label field-name)
+          (p field-name)
+          (let [field-schema (field-name schema)
+                component (schema-to-input-component field-schema)]
+            (om/build component
+                      field-value
+                      {:state {:form-chan fields-chan}
+                       :opts {:param field-name
+                              :schema field-schema}})))))))
 
 
 (defcomponent requirements [reqs owner {schema :schema}]

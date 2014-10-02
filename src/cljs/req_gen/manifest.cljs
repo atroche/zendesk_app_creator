@@ -9,11 +9,8 @@
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]))
 
-
-
 (defn pretty-json [data]
   (.stringify js/JSON (clj->js data) nil 2))
-
 
 (defcomponent manifest [app owner]
   (render [_]
