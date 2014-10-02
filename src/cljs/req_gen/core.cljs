@@ -47,7 +47,8 @@
   (render [_]
     (dom/div
       (om/build nested app {:opts {:schema App}})
-      (om/build manifest (:manifest app)))))
+      (om/build manifest (:manifest app))
+      (om/build manifest (:requirements app)))))
 
 (om/root
   root
