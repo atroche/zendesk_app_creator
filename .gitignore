@@ -17,5 +17,6 @@ resources/public/req_gen*
 out/
 .repl/
 resources/public/out
+resources/public/out-prod
 *-out
 

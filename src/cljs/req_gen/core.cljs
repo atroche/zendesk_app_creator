@@ -28,14 +28,11 @@
                :author {:name ""
                         :email ""}
                :private true
-               :no-template true}
-         :requirements {:targets {:a_basecamp_target {:title "A sample target"
-                                                      :type "basecamp_target"
-                                                      :active true
-                                                      :target_url "http://mytarget.com"
-                                                      :token "123456"
-                                                      :project_id "9999"
-                                                      :resource "todo"}}}}))
+               :no-template true
+               :requirements {:targets {:a_basecamp_target {:title "A sample target"
+                                                            :type "email"
+                                                            :subject "Hey"
+                                                            :email "a@b.com"}}}}}))
 
 
 (defcomponent root [app owner]
@@ -44,6 +41,7 @@
       (go (loop []
         (when (<! re-render-ch)
           (om/refresh! owner)
+          (p "Refreshing Om")
           (recur))))))
   (will-unmount [_]
     (close! (om/get-state owner :rerender-loop)))

@@ -41,4 +41,7 @@
             (om/build (schema-to-input-component (param Manifest))
                       app
                       {:state {:form-chan form-chan}
-                               :opts {:param param}})))))))
+                               :opts {:param param
+                                      :schema (param Manifest)}})))))))
+
+
