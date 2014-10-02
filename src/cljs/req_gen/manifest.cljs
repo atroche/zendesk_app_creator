@@ -1,8 +1,8 @@
 (ns req-gen.manifest
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [req-gen.input :refer [schema-to-input-component]]
-            [req-gen.schemas :refer [Manifest DefaultLocale FrameworkVersion Location]]
-            [req-gen.utils :refer [keys-to-camel-case]]
+            [req-gen.schemas :refer [Manifest DefaultLocale FrameworkVersion Location Requirements]]
+            [req-gen.utils :refer [keys-to-camel-case pclj]]
             [cljs.core.async :refer [<! >! put! chan]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
@@ -28,20 +28,26 @@
         (let  [[event-type param new-value] (<! form-chan)]
           (om/update! app param new-value))))))
   (render-state [_ {form-chan :form-chan :as state}]
-    (let [param :default-locale]
-      (dom/form
-        (for [param (keys app)]
-          (dom/div
-            (dom/label {:for param
-                        :class "manifest-label"
-                        :style {:display "block"
-                                :margin-bottom "4px"
-                                :margin-top "14px"}}
-                       (str (name param) ":"))
-            (om/build (schema-to-input-component (param Manifest))
-                      app
+    (dom/form
+      (for [param (keys app)]
+        (do
+        (dom/div
+          (dom/label {:for param
+                      :class "manifest-label"
+                      :style {:display "block"
+                              :margin-bottom "4px"
+                              :margin-top "14px"}}
+                     (str (name param) ":"))
+          (let [schema (if (= param :requirements) Requirements (param Manifest))
+                cursor (if (map? schema) (param app) app)]
+            (pclj param)
+            (pclj schema)
+            (pclj (schema-to-input-component schema))
+            (pclj cursor)
+            (om/build (schema-to-input-component schema)
+                      cursor
                       {:state {:form-chan form-chan}
                                :opts {:param param
-                                      :schema (param Manifest)}})))))))
+                                      :schema schema}}))))))))
 
 

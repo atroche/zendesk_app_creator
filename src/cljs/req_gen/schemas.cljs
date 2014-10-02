@@ -13,7 +13,7 @@
    :location Location
    :author Author
    :private s/Bool
-   :no-template s/Bool})
+   :no-template s/Boo})
 
 (def TargetType (s/enum "email_target"))
 

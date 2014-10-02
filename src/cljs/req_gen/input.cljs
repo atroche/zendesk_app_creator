@@ -2,20 +2,20 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.utils :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest Author TargetRequirement]]
+            [req-gen.schemas :refer [Manifest Author TargetRequirement Requirements]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]))
 
-(declare checkbox select text-box)
+(declare checkbox select text-box requirements)
 
 
 (defn schema-to-input-component [schema]
   (cond
     (= s/Bool schema) checkbox
     (= s/EnumSchema (type schema)) select
-    (= Author schema) author-info
+    (= Author schema) nested
     (= Requirements schema) requirements
     :else text-box))
 
@@ -50,59 +50,50 @@
         (dom/option {:value option} option)))))
 
 
-(defcomponent author-info [app owner {param :param}]
-  (render-state [_ {form-chan :form-chan}]
-    (dom/div
-      (for [[inner-param inner-schema] (param app)]
-        (do
-          (dom/div
-            (dom/label {:for param
-                        :class "manifest-label"
-                        :style {:display "block"
-                                :margin-bottom "4px"
-                                :margin-top "14px"}}
-                       (str (name inner-param) ":"))
-            (let [component (schema-to-input-component inner-schema)]
-              (om/build component app {:state {:form-chan form-chan}
-                                       :opts {:param [param inner-param]}}))))))))
-
-(defcomponent requirement [requirement owner {identifier :identifier
-                                              requirements-schema :schema}]
+(defcomponent nested [fields owner {schema :schema}]
   (init-state [_]
-    {:req-chan (chan)})
+    {:fields-chan (chan)})
   (will-mount [_]
-    (let [req-chan (om/get-state owner :req-chan)]
+    (let [fields-chan (om/get-state owner :fields-chan)]
       (go (while true
-        (let  [[event-type param new-value :as event] (<! req-chan)]
-          (om/update! requirement param new-value))))))
-  (render-state [_ {req-chan :req-chan}]
+        (let  [[_ field-name new-value] (<! fields-chan)]
+          (om/update! fields field-name new-value))))))
+  (render-state [_ {fields-chan :fields-chan}]
     (dom/div
-      (dom/label (clj->js identifier))
-      (for [[inner-param inner-value :as req] requirement]
+      (for [[field-name field-value :as field] fields]
         (do
           (dom/div
-            (dom/label {:for inner-param
-                        :class "manifest-label"
+            (dom/label {:for field-name
+                        :class "nested-field"
                         :style {:display "block"
                                 :margin-bottom "4px"
                                 :margin-top "14px"}}
-                       (str (name inner-param) ":"))
-            (let [schema (-> requirements-schema inner-param)
-                  component (schema-to-input-component schema)]
+                       (str (name field-name) ":"))
+            (let [field-schema (field-name schema)
+                  component (schema-to-input-component field-schema)]
               (om/build component
-                        app
-                        {:state {:form-chan req-chan}
-                         :opts {:param identifier
-                                :schema schema}}))))))))
+                        fields
+                        {:state {:form-chan fields-chan}
+                         :opts {:param field-name
+                                :schema field-schema}})))))))
 
-(defcomponent requirements [app owner {param :param}]
+ )
+
+
+(defcomponent requirements [reqs owner {param :param
+                                       schema :schema}]
   (render-state [_ {form-chan :form-chan}]
+    (do
     (dom/div
-      (for [[identifier requirement-data] (:targets (param app))]
-        (om/build requirement
-                  (-> app
-                      param
-                      :targets
-                      identifier)
-                   {:opts {:identifier identifier
-                           :schema TargetRequirement}})))))
+      (for [[identifier requirement-data] (:targets reqs)]
+        (do
+        (dom/div
+          (dom/label {:for identifier
+                      :class "requirements-label"
+                      :style {:display "block"
+                              :margin-bottom "4px"
+                              :margin-top "14px"}}
+                     (str (name identifier) ":"))
+          (om/build nested
+                    requirement-data
+                    {:opts {:schema TargetRequirement}}))))))))
