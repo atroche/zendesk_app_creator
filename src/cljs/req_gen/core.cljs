@@ -16,8 +16,8 @@
   (atom {:manifest {:default-locale "en"
                     :framework-version "1.0"
                     :location "nav_bar"
-                    :author {:name ""
-                             :email ""}
+                    :author {:name "Alistair Roche"
+                             :email "a@r.com"}
                     :private true
                     :no-template true}
          :requirements {:targets {:an_email_target {:title "A sample target"

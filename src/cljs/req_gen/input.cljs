@@ -22,6 +22,8 @@
 
 (defcomponent text-box [app owner {param :param}]
   (render-state [_ {form-chan :form-chan}]
+    (pclj app)
+    (pclj (get app param))
     (dom/input {:type "text"
                 :name param
                 :value (get app param)
@@ -72,11 +74,10 @@
       (for [[field-name field-value :as field] fields]
         (dom/div
           (label field-name)
-          (p field-name)
           (let [field-schema (field-name schema)
                 component (schema-to-input-component field-schema)]
             (om/build component
-                      field-value
+                      (if (#{text-box checkbox} component) fields field-value)
                       {:state {:form-chan fields-chan}
                        :opts {:param field-name
                               :schema field-schema}})))))))
