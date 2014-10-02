@@ -84,8 +84,25 @@
 
 
 (defcomponent requirements [reqs owner {schema :schema}]
-  (render [_]
+  (init-state [_]
+    {:add-chan (chan)})
+  (will-mount [_]
+    (let [add-chan (om/get-state owner :add-chan)]
+      (go (while (<! add-chan)
+        (om/transact! reqs
+                      :targets
+                      (fn [old-targets]
+                        (pclj old-targets)
+                        (merge old-targets
+                               {(str "new_requirement_" (.floor js/Math (* 100 (.random js/Math)))) {:title ""
+                                                   :type "email_target"
+                                                   :subject ""
+                                                   :email ""}})))))))
+  (render-state [_ {add-chan :add-chan}]
     (dom/div
+      (dom/button {:class "btn btn-primary"
+                   :on-click (fn [e] (put! add-chan [:add]))}
+                  "Add Requirement")
       (for [[identifier requirement-data] (:targets reqs)]
         (dom/div
           (label identifier)

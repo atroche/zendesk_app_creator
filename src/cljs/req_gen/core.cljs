@@ -21,7 +21,7 @@
                     :private true
                     :no-template true}
          :requirements {:targets {:an_email_target {:title "A sample target"
-                                                      :type "email"
+                                                      :type "email_target"
                                                       :subject "Hey"
                                                       :email "a@b.com"}}}}))
 

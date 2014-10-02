@@ -14,5 +14,5 @@
 
 (defcomponent manifest [app owner]
   (render [_]
-    (dom/pre (pretty-json (keys-to-camel-case app)))))
+    (dom/pre {:style {:margin-top "50px"}} (pretty-json (keys-to-camel-case app)))))
 
