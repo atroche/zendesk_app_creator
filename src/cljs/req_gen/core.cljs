@@ -20,10 +20,10 @@
                              :email ""}
                     :private true
                     :no-template true}
-          :requirements {:targets {:an_email_target {:title "A sample target"
-                                                       :type "email"
-                                                       :subject "Hey"
-                                                       :email "a@b.com"}}}}))
+         :requirements {:targets {:an_email_target {:title "A sample target"
+                                                      :type "email"
+                                                      :subject "Hey"
+                                                      :email "a@b.com"}}}}))
 
 (defonce re-render-ch (chan))
 (enable-console-print!)
