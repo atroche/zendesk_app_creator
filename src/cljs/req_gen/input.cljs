@@ -17,6 +17,7 @@
     (= s/EnumSchema (type schema)) select
     (= Author schema) nested
     (= Requirements schema) requirements
+    (= Manifest schema) nested
     :else text-box))
 
 (defcomponent text-box [app owner {param :param}]
@@ -49,6 +50,14 @@
       (for [option (rest (s/explain schema))]
         (dom/option {:value option} option)))))
 
+(defn label [for-field]
+  (dom/label {:for for-field
+              :class "field-label"
+              :style {:display "block"
+                      :margin-bottom "4px"
+                      :margin-top "14px"}}
+             (str (name for-field) ":")))
+
 
 (defcomponent nested [fields owner {schema :schema}]
   (init-state [_]
@@ -62,38 +71,26 @@
     (dom/div
       (for [[field-name field-value :as field] fields]
         (do
+          (pclj field)
           (dom/div
-            (dom/label {:for field-name
-                        :class "nested-field"
-                        :style {:display "block"
-                                :margin-bottom "4px"
-                                :margin-top "14px"}}
-                       (str (name field-name) ":"))
+            (label field-name)
             (let [field-schema (field-name schema)
                   component (schema-to-input-component field-schema)]
+              (pclj field-schema)
               (om/build component
-                        fields
+                        field-value
                         {:state {:form-chan fields-chan}
                          :opts {:param field-name
-                                :schema field-schema}})))))))
-
- )
+                                :schema field-schema}}))))))))
 
 
-(defcomponent requirements [reqs owner {param :param
-                                       schema :schema}]
-  (render-state [_ {form-chan :form-chan}]
-    (do
+(defcomponent requirements [reqs owner {schema :schema}]
+  (render [_]
     (dom/div
       (for [[identifier requirement-data] (:targets reqs)]
-        (do
         (dom/div
-          (dom/label {:for identifier
-                      :class "requirements-label"
-                      :style {:display "block"
-                              :margin-bottom "4px"
-                              :margin-top "14px"}}
-                     (str (name identifier) ":"))
+          (label identifier)
           (om/build nested
                     requirement-data
-                    {:opts {:schema TargetRequirement}}))))))))
+                    {:opts {:schema TargetRequirement}}))))))
+

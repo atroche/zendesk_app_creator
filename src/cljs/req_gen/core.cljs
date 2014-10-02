@@ -22,17 +22,17 @@
                     (print "reloaded")))
 
 (defonce app-state
-  (atom {:app {:default-locale "en"
-               :framework-version "1.0"
-               :location "nav_bar"
-               :author {:name ""
-                        :email ""}
-               :private true
-               :no-template true
-               :requirements {:targets {:a_basecamp_target {:title "A sample target"
-                                                            :type "email"
-                                                            :subject "Hey"
-                                                            :email "a@b.com"}}}}}))
+  (atom {:manifest {:default-locale "en"
+                    :framework-version "1.0"
+                    :location "nav_bar"
+                    :author {:name ""
+                             :email ""}
+                    :private true
+                    :no-template true}
+          :requirements {:targets {:an_email_target {:title "A sample target"
+                                                       :type "email"
+                                                       :subject "Hey"
+                                                       :email "a@b.com"}}}}))
 
 
 (defcomponent root [app owner]
@@ -47,8 +47,8 @@
     (close! (om/get-state owner :rerender-loop)))
   (render [_]
     (dom/div
-      (om/build manifest-form (:app app))
-      (om/build manifest (:app app)))))
+      (om/build manifest-form app)
+      (om/build manifest (:manifest app)))))
 
 (om/root
   root

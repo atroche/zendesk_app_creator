@@ -26,6 +26,10 @@
 (def Requirements
   {(s/optional-key :targets) {s/Keyword TargetRequirement}})
 
+(def App
+  {:manifest Manifest
+   :requirements Requirements})
+
 (def basecamp-target-reqs {:targets {:a_basecamp_target {:title "A sample target"
                                                 :type "basecamp_target"
                                                 :active true
