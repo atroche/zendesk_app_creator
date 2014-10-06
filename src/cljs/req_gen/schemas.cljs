@@ -16,6 +16,7 @@
    :no-template s/Bool})
 
 (def TargetType (s/enum "email_target"))
+(def TicketFieldType (s/enum "text"))
 
 (def Target
   {:type TargetType
@@ -23,31 +24,24 @@
    :email s/Str
    :subject s/Str})
 
+(def TicketField
+  {:type TicketFieldType
+   :title s/Str})
+
 (def TargetMap {s/Keyword Target})
+(def TicketFieldMap {s/Keyword TicketField})
 
 (def Requirements
-  {:targets TargetMap})
+  {:targets TargetMap
+   :ticket-fields TicketFieldMap})
 
 (def App
   {:manifest Manifest
    :requirements Requirements})
 
-(def basecamp-target-reqs {:targets {:a_basecamp_target {:title "A sample target"
-                                                :type "basecamp_target"
-                                                :active true
-                                                :target_url "http://mytarget.com"
-                                                :token "123456"
-                                                :project_id "9999"
-                                                :resource "todo"}}})
-
-(def target-reqs {:targets {:an_email_target {:title "A sample target"
-                                             :type "email_target"
-                                             :subject "How are you?"
-                                             :email "b@a.com"}}})
 
 (defn schema? [value]
   (satisfies? s/Schema value))
-(enable-console-print!)
 
 (defn empty-state-from-schema [schema]
   (cond

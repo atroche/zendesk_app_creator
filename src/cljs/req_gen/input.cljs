@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.utils :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest Author Target TargetMap
+            [req-gen.schemas :refer [Manifest Author TargetMap TicketFieldMap
                                      empty-state-from-schema Requirements Requirement]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
@@ -19,7 +19,7 @@
     (= Author schema) nested
     (= Requirements schema) nested
     (= Manifest schema) nested
-    (= TargetMap schema) requirements
+    (#{TargetMap TicketFieldMap} schema) requirements
     :else text-box))
 
 (defcomponent text-box [app owner {param :param}]
