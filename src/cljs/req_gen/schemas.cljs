@@ -37,15 +37,42 @@
   {:field s/Str
    :value s/Str})
 
+(def ActionList [Action])
+(def ConditionList [Condition])
+
 (def Trigger
   {:title s/Str
-   :conditions {:all [Condition]
-                :any [Condition]}
-   :actions [Action]})
+   :conditions {:all ConditionList
+                :any ConditionList}
+   :actions ActionList})
+
+(defmulti get-base-schema identity)
+(defmethod get-base-schema ::ExpandableMap [schema] (schema s/Keyword))
+(defmethod get-base-schema ::ExpandableVector [schema] (first schema))
+
+(defmulti get-add-fn identity)
+(defmethod get-add-fn ::ExpandableMap [schema]
+  (fn [old-ones]
+    (let [new-name (str "random_id_" (rand))
+          new-one {new-name (empty-state-from-schema (get-base-schema schema))}]
+      (merge old-ones new-one))))
+(defmethod get-add-fn ::ExpandableVector [schema]
+  (fn [old-ones]
+    (let [new-one (empty-state-from-schema (get-base-schema schema))]
+      (conj old-ones new-one))))
+
 
 (def TargetMap {s/Keyword Target})
 (def TicketFieldMap {s/Keyword TicketField})
 (def TriggerMap {s/Keyword Trigger})
+
+(doseq [schema [TargetMap TicketFieldMap TriggerMap]]
+  (derive schema ::ExpandableMap))
+
+(doseq [schema [ActionList ConditionList]]
+  (derive schema ::ExpandableVector))
+
+
 
 (def Requirements
   {:targets TargetMap
