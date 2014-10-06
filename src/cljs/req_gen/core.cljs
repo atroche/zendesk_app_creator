@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [close! <! >! put! chan]]
             [req-gen.manifest :refer [manifest-json requirements-json]]
-            [req-gen.schemas :refer [App]]
+            [req-gen.schemas :refer [empty-state-from-schema App]]
             [req-gen.input :refer [nested]]
             [req-gen.utils :refer [p]]
             [om.core :as om :include-macros true]
@@ -13,18 +13,7 @@
             [om-tools.core :refer-macros [defcomponent]]))
 
 (defonce app-state
-  (atom {:manifest {:default-locale "de"
-                    :framework-version "1.0"
-                    :location "nav_bar"
-                    :author {:name "Alistair Roche"
-                             :email "a@r.com"}
-                    :private true
-                    :no-template true}
-         :requirements [{:identifier "hello"
-                         :type "email_target"
-                         :title "Hello"
-                         :email "r@a.com"
-                         :subject "This is an email"}]}))
+  (atom (empty-state-from-schema App)))
 
 (defonce re-render-ch (chan))
 (enable-console-print!)

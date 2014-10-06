@@ -2,7 +2,8 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.utils :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest Author TargetRequirement Requirements Requirement]]
+            [req-gen.schemas :refer [Manifest Author TargetRequirement
+                                     empty-state-from-schema Requirements Requirement]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [om-tools.dom :as dom :include-macros true]
@@ -91,11 +92,7 @@
         (om/transact! reqs
                       (fn [old-targets]
                         (conj old-targets
-                              {:identifier ""
-                               :title ""
-                               :type "email_target"
-                               :subject ""
-                               :email ""})))))))
+                              (empty-state-from-schema Requirement))))))))
   (render-state [_ {add-chan :add-chan}]
     (dom/div
       (dom/button {:class "btn btn-primary"

@@ -47,3 +47,17 @@
                                              :subject "How are you?"
                                              :email "b@a.com"}}})
 
+(defn schema? [value]
+  (satisfies? s/Schema value))
+
+(defn empty-state-from-schema [schema]
+  (cond
+    (not (schema? schema)) nil
+    (map? (s/explain schema)) (into {}
+                                    (for [[k v] schema]
+                                      [k (empty-state-from-schema v)]))
+    (vector? (s/explain schema)) (mapv empty-state-from-schema schema)
+    (= s/EnumSchema (type schema)) (let [first-enum-value (first (rest (s/explain schema)))]
+                                     (empty-state-from-schema first-enum-value))
+    :else nil))
+
