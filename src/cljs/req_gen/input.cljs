@@ -82,6 +82,11 @@
                        :opts {:param field-name
                               :schema field-schema}})))))))
 
+(defn add-new-requirement [schema old-reqs]
+  (let [req-name (str "nr_" (rand))
+        new-req {req-name (empty-state-from-schema schema)}]
+    (merge old-reqs new-req)))
+
 (defcomponent requirements [reqs owner {schema :schema}]
   (init-state [_]
     {:add-chan (chan)})
@@ -89,9 +94,7 @@
     (let [add-chan (om/get-state owner :add-chan)]
       (go (while (<! add-chan)
         (om/transact! reqs
-                      (fn [old-reqs]
-                        (merge old-reqs
-                               {(str "nr_" (rand)) (empty-state-from-schema (schema s/Keyword))})))))))
+                      (partial add-new-requirement (schema s/Keyword)))))))
   (render-state [_ {add-chan :add-chan}]
     (dom/div
       (dom/button {:class "btn btn-primary"
