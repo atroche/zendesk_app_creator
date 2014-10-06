@@ -23,8 +23,10 @@
    :email s/Str
    :subject s/Str})
 
+(def TargetMap {s/Keyword Target})
+
 (def Requirements
-  {:targets {s/Keyword Target}})
+  {:targets TargetMap})
 
 (def App
   {:manifest Manifest
@@ -52,10 +54,7 @@
     (not (schema? schema)) schema
     (map? (s/explain schema)) (into {}
                                     (for [[k v] (filter (fn [[k v]] (keyword? k)) schema)]
-                                      (do
-                                        (println (clj->js k))
-                                        [k (empty-state-from-schema v)]
-                                        )))
+                                      [k (empty-state-from-schema v)]))
     (vector? (s/explain schema)) (mapv empty-state-from-schema schema)
     (= s/EnumSchema (type schema)) (let [first-enum-value (first (rest (s/explain schema)))]
                                      (empty-state-from-schema first-enum-value))

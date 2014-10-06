@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.utils :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest Author Target
+            [req-gen.schemas :refer [Manifest Author Target TargetMap
                                      empty-state-from-schema Requirements Requirement]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
@@ -17,14 +17,13 @@
     (= s/Bool schema) checkbox
     (= s/EnumSchema (type schema)) select
     (= Author schema) nested
-    (= Requirements schema) requirements
+    (= Requirements schema) nested
     (= Manifest schema) nested
+    (= TargetMap schema) requirements
     :else text-box))
 
 (defcomponent text-box [app owner {param :param}]
   (render-state [_ {form-chan :form-chan}]
-    (pclj app)
-    (pclj (get app param))
     (dom/input {:type "text"
                 :name param
                 :value (get app param)
@@ -83,7 +82,6 @@
                        :opts {:param field-name
                               :schema field-schema}})))))))
 
-
 (defcomponent requirements [reqs owner {schema :schema}]
   (init-state [_]
     {:add-chan (chan)})
@@ -91,19 +89,19 @@
     (let [add-chan (om/get-state owner :add-chan)]
       (go (while (<! add-chan)
         (om/transact! reqs
-                      :targets
-                      (fn [old-targets]
-                        (merge old-targets
-                               {(str "new_requirement_10") (empty-state-from-schema Target)})))))))
+                      (fn [old-reqs]
+                        (merge old-reqs
+                               {(str "nr_" (rand)) (empty-state-from-schema (schema s/Keyword))})))))))
   (render-state [_ {add-chan :add-chan}]
     (dom/div
       (dom/button {:class "btn btn-primary"
                    :on-click (fn [e] (put! add-chan [:add]))}
                   "Add Requirement")
-      (for [[identifier requirement-data] (:targets reqs)]
-        (dom/div
+      (for [[identifier requirement-data] reqs]
+        (do
+          (dom/div
           (label identifier)
           (om/build nested
                     requirement-data
-                    {:opts {:schema Target}}))))))
+                    {:opts {:schema (schema s/Keyword)}})))))))
 
