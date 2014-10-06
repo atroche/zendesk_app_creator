@@ -2,24 +2,19 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.utils :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest Author TargetMap TicketFieldMap TriggerMap
-                                     empty-state-from-schema Requirements Requirement]]
+            [req-gen.schemas :refer [Requirements empty-state-from-schema]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]))
 
-(declare checkbox select text-box requirements)
-
+(declare nested list-of-fields checkbox select text-box requirements)
 
 (defn schema-to-input-component [schema]
   (cond
     (= s/Bool schema) checkbox
     (= s/EnumSchema (type schema)) select
-    (= Author schema) nested
-    (= Requirements schema) nested
-    (= Manifest schema) nested
-    (#{TargetMap TicketFieldMap TriggerMap} schema) requirements
+    ((set (vals Requirements)) schema) requirements
     (map? (s/explain schema)) nested
     (vector? (s/explain schema)) list-of-fields
     :else text-box))
@@ -86,7 +81,7 @@
                               :schema field-schema}}))))))))
 
 (defn add-new-instance [schema old-ones]
-  (let [new-name (str "nr_" (rand))
+  (let [new-name (str "random_id_" (rand))
         new-one {new-name (empty-state-from-schema schema)}]
     (merge old-ones new-one)))
 
@@ -130,12 +125,6 @@
                   "Add Field")
       (for [field fields]
         (do
-          (pclj "schema!")
-          (pclj schema)
-          (pclj "fields: ")
-          (pclj fields)
-          (pclj "field: ")
-          (pclj field)
           (dom/div
           (om/build nested
                     field
