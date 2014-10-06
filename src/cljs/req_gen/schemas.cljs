@@ -17,18 +17,14 @@
 
 (def TargetType (s/enum "email_target"))
 
-(def TargetRequirement
-  {:identifier s/Str
-   :type TargetType
+(def Target
+  {:type TargetType
    :title s/Str
    :email s/Str
    :subject s/Str})
 
-(def Requirement
-  (s/enum TargetRequirement))
-
 (def Requirements
-  [Requirement])
+  {:targets {s/Keyword Target}})
 
 (def App
   {:manifest Manifest
@@ -49,13 +45,17 @@
 
 (defn schema? [value]
   (satisfies? s/Schema value))
+(enable-console-print!)
 
 (defn empty-state-from-schema [schema]
   (cond
-    (not (schema? schema)) nil
+    (not (schema? schema)) schema
     (map? (s/explain schema)) (into {}
-                                    (for [[k v] schema]
-                                      [k (empty-state-from-schema v)]))
+                                    (for [[k v] (filter (fn [[k v]] (keyword? k)) schema)]
+                                      (do
+                                        (println (clj->js k))
+                                        [k (empty-state-from-schema v)]
+                                        )))
     (vector? (s/explain schema)) (mapv empty-state-from-schema schema)
     (= s/EnumSchema (type schema)) (let [first-enum-value (first (rest (s/explain schema)))]
                                      (empty-state-from-schema first-enum-value))

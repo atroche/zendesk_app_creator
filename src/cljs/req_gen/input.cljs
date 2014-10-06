@@ -2,14 +2,14 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.utils :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest Author TargetRequirement
+            [req-gen.schemas :refer [Manifest Author Target
                                      empty-state-from-schema Requirements Requirement]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
             [om-tools.dom :as dom :include-macros true]
             [om-tools.core :refer-macros [defcomponent]]))
 
-(declare checkbox select text-box requirements list-of-fields)
+(declare checkbox select text-box requirements)
 
 
 (defn schema-to-input-component [schema]
@@ -18,12 +18,13 @@
     (= s/EnumSchema (type schema)) select
     (= Author schema) nested
     (= Requirements schema) requirements
-    (= Requirement schema) nested
     (= Manifest schema) nested
     :else text-box))
 
 (defcomponent text-box [app owner {param :param}]
   (render-state [_ {form-chan :form-chan}]
+    (pclj app)
+    (pclj (get app param))
     (dom/input {:type "text"
                 :name param
                 :value (get app param)
@@ -42,14 +43,14 @@
 
 
 (defcomponent select [app owner {param :param
-                                 my-schema :schema}]
+                                 schema :schema}]
   (render-state [_ {form-chan :form-chan}]
     (dom/select {:name param
                  :value (param app)
                  :on-change (fn [event]
                               (let [value (.. event -target -value)]
                                 (put! form-chan [:change param value])))}
-      (for [option (rest (s/explain my-schema))]
+      (for [option (rest (s/explain schema))]
         (dom/option {:value option} option)))))
 
 (defn label [for-field]
@@ -90,18 +91,19 @@
     (let [add-chan (om/get-state owner :add-chan)]
       (go (while (<! add-chan)
         (om/transact! reqs
+                      :targets
                       (fn [old-targets]
-                        (conj old-targets
-                              (empty-state-from-schema Requirement))))))))
+                        (merge old-targets
+                               {(str "new_requirement_10") (empty-state-from-schema Target)})))))))
   (render-state [_ {add-chan :add-chan}]
     (dom/div
       (dom/button {:class "btn btn-primary"
                    :on-click (fn [e] (put! add-chan [:add]))}
                   "Add Requirement")
-      (dom/div
-        (for [req reqs]
-          (dom/div
-            (om/build nested
-                      req
-                      {:opts {:schema Requirement}})))))))
+      (for [[identifier requirement-data] (:targets reqs)]
+        (dom/div
+          (label identifier)
+          (om/build nested
+                    requirement-data
+                    {:opts {:schema Target}}))))))
 

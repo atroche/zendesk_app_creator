@@ -12,10 +12,7 @@
 (defn pretty-json [data]
   (.stringify js/JSON (clj->js data) nil 2))
 
-(defcomponent manifest-json [app owner]
+(defcomponent manifest [app owner]
   (render [_]
     (dom/pre {:style {:margin-top "50px"}} (pretty-json (keys-to-camel-case app)))))
 
-(defcomponent requirements-json [app owner]
-  (render [_]
-    (dom/pre {:style {:margin-top "50px"}} (pretty-json app))))

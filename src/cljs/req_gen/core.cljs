@@ -1,8 +1,8 @@
 (ns req-gen.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [close! <! >! put! chan]]
-            [req-gen.manifest :refer [manifest-json requirements-json]]
             [req-gen.schemas :refer [empty-state-from-schema App]]
+            [req-gen.manifest :refer [manifest]]
             [req-gen.input :refer [nested]]
             [req-gen.utils :refer [p]]
             [om.core :as om :include-macros true]
@@ -37,9 +37,8 @@
   (render [_]
     (dom/div
       (om/build nested app {:opts {:schema App}})
-      (om/build manifest-json (:manifest app))
-      (om/build requirements-json (:requirements app))
-      )))
+      (om/build manifest (:manifest app))
+      (om/build manifest (:requirements app)))))
 
 (om/root
   root
