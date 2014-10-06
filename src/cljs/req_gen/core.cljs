@@ -1,7 +1,7 @@
 (ns req-gen.core
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [close! <! >! put! chan]]
-            [req-gen.manifest :refer [manifest]]
+            [req-gen.manifest :refer [manifest-json requirements-json]]
             [req-gen.schemas :refer [App]]
             [req-gen.input :refer [nested]]
             [req-gen.utils :refer [p]]
@@ -20,10 +20,11 @@
                              :email "a@r.com"}
                     :private true
                     :no-template true}
-         :requirements {:targets {:an_email_target {:title "A sample target"
-                                                      :type "email_target"
-                                                      :subject "Hey"
-                                                      :email "a@b.com"}}}}))
+         :requirements [{:identifier "hello"
+                         :type "email_target"
+                         :title "Hello"
+                         :email "r@a.com"
+                         :subject "This is an email"}]}))
 
 (defonce re-render-ch (chan))
 (enable-console-print!)
@@ -47,8 +48,9 @@
   (render [_]
     (dom/div
       (om/build nested app {:opts {:schema App}})
-      (om/build manifest (:manifest app))
-      (om/build manifest (:requirements app)))))
+      (om/build manifest-json (:manifest app))
+      (om/build requirements-json (:requirements app))
+      )))
 
 (om/root
   root

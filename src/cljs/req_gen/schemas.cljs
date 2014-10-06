@@ -18,13 +18,17 @@
 (def TargetType (s/enum "email_target"))
 
 (def TargetRequirement
-  {:type TargetType
+  {:identifier s/Str
+   :type TargetType
    :title s/Str
    :email s/Str
    :subject s/Str})
 
+(def Requirement
+  (s/enum TargetRequirement))
+
 (def Requirements
-  {(s/optional-key :targets) {s/Keyword TargetRequirement}})
+  [Requirement])
 
 (def App
   {:manifest Manifest
