@@ -2,7 +2,7 @@
   (:require-macros [cljs.core.async.macros :refer [go]])
   (:require [cljs.core.async :refer [<! >! put! chan]]
             [req-gen.utils :refer [p pclj]]
-            [req-gen.schemas :refer [Manifest Author TargetMap TicketFieldMap
+            [req-gen.schemas :refer [Manifest Author TargetMap TicketFieldMap TriggerMap
                                      empty-state-from-schema Requirements Requirement]]
             [om.core :as om :include-macros true]
             [schema.core :as s :include-macros true]
@@ -19,7 +19,9 @@
     (= Author schema) nested
     (= Requirements schema) nested
     (= Manifest schema) nested
-    (#{TargetMap TicketFieldMap} schema) requirements
+    (#{TargetMap TicketFieldMap TriggerMap} schema) requirements
+    (map? (s/explain schema)) nested
+    (vector? (s/explain schema)) list-of-fields
     :else text-box))
 
 (defcomponent text-box [app owner {param :param}]
@@ -72,20 +74,25 @@
   (render-state [_ {fields-chan :fields-chan}]
     (dom/div
       (for [[field-name field-value :as field] fields]
-        (dom/div
+        (do (pclj field-name) (dom/div
           (label field-name)
           (let [field-schema (field-name schema)
                 component (schema-to-input-component field-schema)]
+            (pclj field-schema)
             (om/build component
                       (if (#{text-box checkbox select} component) fields field-value)
                       {:state {:form-chan fields-chan}
                        :opts {:param field-name
-                              :schema field-schema}})))))))
+                              :schema field-schema}}))))))))
 
-(defn add-new-requirement [schema old-reqs]
-  (let [req-name (str "nr_" (rand))
-        new-req {req-name (empty-state-from-schema schema)}]
-    (merge old-reqs new-req)))
+(defn add-new-instance [schema old-ones]
+  (let [new-name (str "nr_" (rand))
+        new-one {new-name (empty-state-from-schema schema)}]
+    (merge old-ones new-one)))
+
+(defn add-new-instance-to-list [schema old-ones]
+  (let [new-one (empty-state-from-schema schema)]
+    (conj old-ones new-one)))
 
 (defcomponent requirements [reqs owner {schema :schema}]
   (init-state [_]
@@ -94,7 +101,7 @@
     (let [add-chan (om/get-state owner :add-chan)]
       (go (while (<! add-chan)
         (om/transact! reqs
-                      (partial add-new-requirement (schema s/Keyword)))))))
+                      (partial add-new-instance (schema s/Keyword)))))))
   (render-state [_ {add-chan :add-chan}]
     (dom/div
       (dom/button {:class "btn btn-primary"
@@ -107,4 +114,30 @@
           (om/build nested
                     requirement-data
                     {:opts {:schema (schema s/Keyword)}})))))))
+
+(defcomponent list-of-fields [fields owner {schema :schema}]
+  (init-state [_]
+    {:add-chan (chan)})
+  (will-mount [_]
+    (let [add-chan (om/get-state owner :add-chan)]
+      (go (while (<! add-chan)
+        (om/transact! fields
+                      (partial add-new-instance-to-list (first schema)))))))
+  (render-state [_ {add-chan :add-chan}]
+    (dom/div
+      (dom/button {:class "btn btn-primary"
+                   :on-click (fn [e] (put! add-chan [:add]))}
+                  "Add Field")
+      (for [field fields]
+        (do
+          (pclj "schema!")
+          (pclj schema)
+          (pclj "fields: ")
+          (pclj fields)
+          (pclj "field: ")
+          (pclj field)
+          (dom/div
+          (om/build nested
+                    field
+                    {:opts {:schema (first schema)}})))))))
 

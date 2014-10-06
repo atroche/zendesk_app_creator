@@ -28,12 +28,29 @@
   {:type TicketFieldType
    :title s/Str})
 
+(def Condition
+  {:field s/Str
+   :operator s/Str
+   :value s/Str})
+
+(def Action
+  {:field s/Str
+   :value s/Str})
+
+(def Trigger
+  {:title s/Str
+   :conditions {:all [Condition]
+                :any [Condition]}
+   :actions [Action]})
+
 (def TargetMap {s/Keyword Target})
 (def TicketFieldMap {s/Keyword TicketField})
+(def TriggerMap {s/Keyword Trigger})
 
 (def Requirements
   {:targets TargetMap
-   :ticket-fields TicketFieldMap})
+   :ticket-fields TicketFieldMap
+   :triggers TriggerMap})
 
 (def App
   {:manifest Manifest
@@ -49,7 +66,7 @@
     (map? (s/explain schema)) (into {}
                                     (for [[k v] (filter (fn [[k v]] (keyword? k)) schema)]
                                       [k (empty-state-from-schema v)]))
-    (vector? (s/explain schema)) (mapv empty-state-from-schema schema)
+    (vector? (s/explain schema)) []
     (= s/EnumSchema (type schema)) (let [first-enum-value (first (rest (s/explain schema)))]
                                      (empty-state-from-schema first-enum-value))
     :else nil))
